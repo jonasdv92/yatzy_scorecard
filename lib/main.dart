@@ -8,6 +8,7 @@ import 'models/game_type.dart';
 import 'models/score_category.dart';
 import 'providers/game_provider.dart';
 import 'providers/settings_provider.dart';
+import 'screens/home_screen.dart';
 import 'services/storage_service.dart';
 
 void main() async {
@@ -37,14 +38,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Yatzy Scorecard',
-        home: Scaffold(
-          appBar: AppBar(
-            title: const Text('Yatzy Scorecard'),
-          ),
-          body: const Center(
-            child: Text('App setup is working'),
-          ),
-        ),
+        home: const HomeScreen(),
       ),
     );
   }
