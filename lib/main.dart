@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
 
 import 'models/game.dart';
 import 'models/player.dart';
 import 'models/game_type.dart';
 import 'models/score_category.dart';
+import 'providers/game_provider.dart';
+import 'providers/settings_provider.dart';
 import 'services/storage_service.dart';
 
 void main() async {
@@ -27,14 +30,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Yatzy Scorecard',
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Yatzy Scorecard'),
-        ),
-        body: const Center(
-          child: Text('App setup is working'),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => GameProvider()),
+        ChangeNotifierProvider(create: (_) => SettingsProvider()),
+      ],
+      child: MaterialApp(
+        title: 'Yatzy Scorecard',
+        home: Scaffold(
+          appBar: AppBar(
+            title: const Text('Yatzy Scorecard'),
+          ),
+          body: const Center(
+            child: Text('App setup is working'),
+          ),
         ),
       ),
     );
