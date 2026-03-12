@@ -9,11 +9,38 @@ import '../widgets/extra_throws_counter.dart';
 import '../widgets/player_tabs.dart';
 import '../widgets/score_row.dart';
 import '../widgets/totals_card.dart';
+import 'results_screen.dart';
 
-class GameScreen extends StatelessWidget {
-  GameScreen({super.key});
+class GameScreen extends StatefulWidget {
+  const GameScreen({super.key});
 
+  @override
+  State<GameScreen> createState() => _GameScreenState();
+}
+
+class _GameScreenState extends State<GameScreen> {
   final GameService _gameService = GameService();
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
+      final provider = context.read<GameProvider>();
+      if (provider.justFinishedGame) {
+        provider.clearJustFinishedGame();
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const ResultsScreen(),
+          ),
+        );
+      }
+    });
+  }
 
   Future<void> _showScoreDialog(
     BuildContext context, {
@@ -238,19 +265,6 @@ class GameScreen extends StatelessWidget {
                     lowerTotal: provider.getLowerSectionTotal(player.id),
                     grandTotal: provider.getGrandTotal(player.id),
                   ),
-                  if (game.isFinished) ...[
-                    const SizedBox(height: 16),
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Text(
-                          'Spillet er ferdig',
-                          style: Theme.of(context).textTheme.titleMedium,
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                  ],
                 ],
               ),
             ),

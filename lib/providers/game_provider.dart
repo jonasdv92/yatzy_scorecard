@@ -15,16 +15,19 @@ class GameProvider extends ChangeNotifier {
   List<Game> _savedGames = [];
   int _selectedPlayerIndex = 0;
   bool _isLoading = false;
+  bool _justFinishedGame = false;
 
   Game? get currentGame => _currentGame;
   List<Game> get savedGames => _savedGames;
   int get selectedPlayerIndex => _selectedPlayerIndex;
   bool get isLoading => _isLoading;
+  bool get justFinishedGame => _justFinishedGame;
 
   Player? get selectedPlayer {
     if (_currentGame == null) return null;
     if (_currentGame!.players.isEmpty) return null;
-    if (_selectedPlayerIndex < 0 || _selectedPlayerIndex >= _currentGame!.players.length) {
+    if (_selectedPlayerIndex < 0 ||
+        _selectedPlayerIndex >= _currentGame!.players.length) {
       return null;
     }
     return _currentGame!.players[_selectedPlayerIndex];
@@ -81,6 +84,7 @@ class GameProvider extends ChangeNotifier {
     );
 
     _selectedPlayerIndex = 0;
+    _justFinishedGame = false;
 
     await _gameRepository.saveGame(_currentGame!);
     _savedGames = _gameRepository.getAllGames();
@@ -95,6 +99,7 @@ class GameProvider extends ChangeNotifier {
 
     _currentGame = _gameRepository.getGame(gameId);
     _selectedPlayerIndex = 0;
+    _justFinishedGame = false;
 
     _isLoading = false;
     notifyListeners();
@@ -115,12 +120,17 @@ class GameProvider extends ChangeNotifier {
   }) async {
     if (_currentGame == null) return;
 
+    final wasFinishedBefore = _currentGame!.isFinished;
+
     _currentGame = _gameService.updateScore(
       game: _currentGame!,
       playerId: playerId,
       category: category,
       value: value,
     );
+
+    _justFinishedGame =
+        !wasFinishedBefore && (_currentGame?.isFinished ?? false);
 
     await _gameRepository.saveGame(_currentGame!);
     _savedGames = _gameRepository.getAllGames();
@@ -172,6 +182,7 @@ class GameProvider extends ChangeNotifier {
     if (_currentGame?.id == gameId) {
       _currentGame = null;
       _selectedPlayerIndex = 0;
+      _justFinishedGame = false;
     }
 
     _savedGames = _gameRepository.getAllGames();
@@ -183,6 +194,7 @@ class GameProvider extends ChangeNotifier {
 
     _currentGame = _gameService.createRematch(_currentGame!);
     _selectedPlayerIndex = 0;
+    _justFinishedGame = false;
 
     await _gameRepository.saveGame(_currentGame!);
     _savedGames = _gameRepository.getAllGames();
@@ -193,6 +205,12 @@ class GameProvider extends ChangeNotifier {
   void clearCurrentGame() {
     _currentGame = null;
     _selectedPlayerIndex = 0;
+    _justFinishedGame = false;
+    notifyListeners();
+  }
+
+  void clearJustFinishedGame() {
+    _justFinishedGame = false;
     notifyListeners();
   }
 }
