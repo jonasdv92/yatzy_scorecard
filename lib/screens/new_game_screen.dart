@@ -5,6 +5,7 @@ import '../config/app_constants.dart';
 import '../models/game_type.dart';
 import '../providers/game_provider.dart';
 import '../widgets/primary_button.dart';
+import 'game_screen.dart';
 
 class NewGameScreen extends StatefulWidget {
   final GameType gameType;
@@ -67,11 +68,10 @@ class _NewGameScreenState extends State<NewGameScreen> {
 
     if (!mounted) return;
 
-    Navigator.pop(context);
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Spill opprettet'),
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => GameScreen(),
       ),
     );
   }
