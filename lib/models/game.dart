@@ -1,14 +1,32 @@
+import 'package:hive/hive.dart';
+
 import 'player.dart';
 import 'game_type.dart';
 import 'score_category.dart';
 
-class Game {
+part 'game.g.dart';
+
+@HiveType(typeId: 0)
+class Game extends HiveObject {
+  @HiveField(0)
   final String id;
+
+  @HiveField(1)
   final GameType type;
+
+  @HiveField(2)
   final List<Player> players;
+
+  @HiveField(3)
   final Map<String, Map<ScoreCategory, int?>> scores;
+
+  @HiveField(4)
   final DateTime createdAt;
+
+  @HiveField(5)
   final DateTime updatedAt;
+
+  @HiveField(6)
   final bool isFinished;
 
   Game({
