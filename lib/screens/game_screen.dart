@@ -49,6 +49,7 @@ class _GameScreenState extends State<GameScreen> {
     BuildContext context, {
     required String playerId,
     required ScoreCategory category,
+    required GameType gameType,
     int? currentValue,
   }) async {
     final languageCode = context.read<SettingsProvider>().languageCode;
@@ -60,7 +61,9 @@ class _GameScreenState extends State<GameScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text(ScoreRules.title(languageCode, category)),
+          title: Text(
+            ScoreRules.title(languageCode, category, gameType: gameType),
+          ),
           content: TextField(
             controller: controller,
             keyboardType: TextInputType.number,
@@ -99,6 +102,7 @@ class _GameScreenState extends State<GameScreen> {
   Future<void> _showRuleDialog(
     BuildContext context,
     ScoreCategory category,
+    GameType gameType,
   ) async {
     final languageCode = context.read<SettingsProvider>().languageCode;
 
@@ -106,7 +110,9 @@ class _GameScreenState extends State<GameScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text(ScoreRules.title(languageCode, category)),
+          title: Text(
+            ScoreRules.title(languageCode, category, gameType: gameType),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -279,13 +285,22 @@ class _GameScreenState extends State<GameScreen> {
                       (definition) => Padding(
                         padding: const EdgeInsets.only(bottom: 8),
                         child: ScoreRow(
-                          title: ScoreRules.title(languageCode, definition.category),
+                          title: ScoreRules.title(
+                            languageCode,
+                            definition.category,
+                            gameType: game.type,
+                          ),
                           value: playerScores[definition.category],
-                          onInfoTap: () => _showRuleDialog(context, definition.category),
+                          onInfoTap: () => _showRuleDialog(
+                            context,
+                            definition.category,
+                            game.type,
+                          ),
                           onTap: () => _showScoreDialog(
                             context,
                             playerId: player.id,
                             category: definition.category,
+                            gameType: game.type,
                             currentValue: playerScores[definition.category],
                           ),
                         ),
@@ -298,13 +313,22 @@ class _GameScreenState extends State<GameScreen> {
                       (definition) => Padding(
                         padding: const EdgeInsets.only(bottom: 8),
                         child: ScoreRow(
-                          title: ScoreRules.title(languageCode, definition.category),
+                          title: ScoreRules.title(
+                            languageCode,
+                            definition.category,
+                            gameType: game.type,
+                          ),
                           value: playerScores[definition.category],
-                          onInfoTap: () => _showRuleDialog(context, definition.category),
+                          onInfoTap: () => _showRuleDialog(
+                            context,
+                            definition.category,
+                            game.type,
+                          ),
                           onTap: () => _showScoreDialog(
                             context,
                             playerId: player.id,
                             category: definition.category,
+                            gameType: game.type,
                             currentValue: playerScores[definition.category],
                           ),
                         ),

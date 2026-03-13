@@ -1,3 +1,4 @@
+import '../models/game_type.dart';
 import '../models/score_category.dart';
 
 class ScoreRule {
@@ -190,7 +191,17 @@ class ScoreRules {
     ),
   };
 
-  static String title(String languageCode, ScoreCategory category) {
+  static String title(
+    String languageCode,
+    ScoreCategory category, {
+    GameType? gameType,
+  }) {
+    if (languageCode == 'no' &&
+        gameType == GameType.maxiYatzy &&
+        category == ScoreCategory.fullHouse) {
+      return 'Hytte';
+    }
+
     final rule = rules[category];
     if (rule == null) return category.name;
     return languageCode == 'en' ? rule.titleEn : rule.titleNo;
