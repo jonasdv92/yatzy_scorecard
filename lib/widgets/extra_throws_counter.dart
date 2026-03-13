@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 
 class ExtraThrowsCounter extends StatelessWidget {
   final int value;
+  final String label;
   final VoidCallback onIncrement;
   final VoidCallback onDecrement;
 
   const ExtraThrowsCounter({
     super.key,
     required this.value,
+    required this.label,
     required this.onIncrement,
     required this.onDecrement,
   });
@@ -19,10 +21,10 @@ class ExtraThrowsCounter extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         child: Row(
           children: [
-            const Expanded(
+            Expanded(
               child: Text(
-                'Ekstra kast',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                label,
+                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
             ),
             IconButton(

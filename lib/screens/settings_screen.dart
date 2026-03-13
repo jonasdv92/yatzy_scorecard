@@ -30,29 +30,24 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Card(
-              child: Column(
-                children: [
-                  RadioListTile<String>(
-                    title: Text(AppTexts.t(languageCode, 'norwegian')),
-                    value: 'no',
-                    groupValue: settings.languageCode,
-                    onChanged: (value) {
-                      if (value != null) {
-                        settings.setLanguage(value);
-                      }
-                    },
-                  ),
-                  RadioListTile<String>(
-                    title: Text(AppTexts.t(languageCode, 'english')),
-                    value: 'en',
-                    groupValue: settings.languageCode,
-                    onChanged: (value) {
-                      if (value != null) {
-                        settings.setLanguage(value);
-                      }
-                    },
-                  ),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: SegmentedButton<String>(
+                  segments: [
+                    ButtonSegment<String>(
+                      value: 'no',
+                      label: Text(AppTexts.t(languageCode, 'norwegian')),
+                    ),
+                    ButtonSegment<String>(
+                      value: 'en',
+                      label: Text(AppTexts.t(languageCode, 'english')),
+                    ),
+                  ],
+                  selected: {settings.languageCode},
+                  onSelectionChanged: (selection) {
+                    settings.setLanguage(selection.first);
+                  },
+                ),
               ),
             ),
             const SizedBox(height: 16),

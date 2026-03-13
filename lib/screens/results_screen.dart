@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../config/app_texts.dart';
 import '../models/player.dart';
 import '../providers/game_provider.dart';
+import '../providers/settings_provider.dart';
 import 'game_screen.dart';
 
 class ResultsScreen extends StatelessWidget {
@@ -29,11 +31,12 @@ class ResultsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<GameProvider>();
     final game = provider.currentGame;
+    final languageCode = context.watch<SettingsProvider>().languageCode;
 
     if (game == null) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Resultat'),
+          title: Text(AppTexts.t(languageCode, 'results')),
         ),
         body: const Center(
           child: Text('Fant ikke resultat'),
@@ -46,7 +49,7 @@ class ResultsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Resultat'),
+        title: Text(AppTexts.t(languageCode, 'results')),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -58,11 +61,9 @@ class ResultsScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     children: [
-                      const Text(
-                        'Vinner',
-                        style: TextStyle(
-                          fontSize: 16,
-                        ),
+                      Text(
+                        AppTexts.t(languageCode, 'winner'),
+                        style: const TextStyle(fontSize: 16),
                       ),
                       const SizedBox(height: 8),
                       Text(
@@ -74,10 +75,8 @@ class ResultsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        '${provider.getGrandTotal(winner.id)} poeng',
-                        style: const TextStyle(
-                          fontSize: 18,
-                        ),
+                        provider.getGrandTotal(winner.id).toString(),
+                        style: const TextStyle(fontSize: 18),
                       ),
                     ],
                   ),
@@ -127,11 +126,11 @@ class ResultsScreen extends StatelessWidget {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => GameScreen(),
+                      builder: (_) => const GameScreen(),
                     ),
                   );
                 },
-                child: const Text('Spill igjen'),
+                child: Text(AppTexts.t(languageCode, 'playAgain')),
               ),
             ),
             const SizedBox(height: 12),
@@ -142,7 +141,7 @@ class ResultsScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.popUntil(context, (route) => route.isFirst);
                 },
-                child: const Text('Tilbake til meny'),
+                child: Text(AppTexts.t(languageCode, 'backToMenu')),
               ),
             ),
           ],

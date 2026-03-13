@@ -234,8 +234,9 @@ class _GameScreenState extends State<GameScreen> {
 
                           return Chip(
                             label: Text('${p.name}: $total'),
-                            backgroundColor:
-                                isActive ? Colors.teal.withOpacity(0.15) : null,
+                            backgroundColor: isActive
+                                ? Colors.teal.withValues(alpha: 0.15)
+                                : null,
                           );
                         }).toList(),
                       ),
@@ -252,6 +253,7 @@ class _GameScreenState extends State<GameScreen> {
               const SizedBox(height: 10),
               if (game.type == GameType.maxiYatzy) ...[
                 ExtraThrowsCounter(
+                  label: AppTexts.t(languageCode, 'extraThrows'),
                   value: player.extraThrows,
                   onIncrement: () {
                     provider.updateExtraThrows(

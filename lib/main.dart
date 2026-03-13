@@ -40,6 +40,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Yatzy Scorecard',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
             seedColor: Colors.teal,

@@ -23,12 +23,21 @@ class NewGameScreen extends StatefulWidget {
 
 class _NewGameScreenState extends State<NewGameScreen> {
   final List<TextEditingController> _controllers = [];
+  bool _initialized = false;
 
   @override
-  void initState() {
-    super.initState();
-    _controllers.add(TextEditingController(text: 'Player 1'));
-    _controllers.add(TextEditingController(text: 'Player 2'));
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!_initialized) {
+      final languageCode = context.read<SettingsProvider>().languageCode;
+      final base = languageCode == 'en' ? 'Player' : 'Spiller';
+
+      _controllers.add(TextEditingController(text: '$base 1'));
+      _controllers.add(TextEditingController(text: '$base 2'));
+
+      _initialized = true;
+    }
   }
 
   @override
@@ -93,8 +102,7 @@ class _NewGameScreenState extends State<NewGameScreen> {
   Widget build(BuildContext context) {
     final isLoading = context.watch<GameProvider>().isLoading;
     final languageCode = context.watch<SettingsProvider>().languageCode;
-    final playerLabelBase =
-        languageCode == 'en' ? 'Player' : 'Spiller';
+    final playerLabelBase = languageCode == 'en' ? 'Player' : 'Spiller';
 
     return Scaffold(
       appBar: AppBar(
