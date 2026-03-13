@@ -5,6 +5,9 @@ class SettingsProvider extends ChangeNotifier {
 
   String get languageCode => _languageCode;
 
+  bool get isEnglish => _languageCode == 'en';
+  bool get isNorwegian => _languageCode == 'no';
+
   void setLanguage(String code) {
     _languageCode = code;
     notifyListeners();

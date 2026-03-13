@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../config/score_labels.dart';
+import '../config/app_texts.dart';
+import '../config/score_rules.dart';
 import '../models/game_type.dart';
 import '../models/score_category.dart';
 import '../providers/game_provider.dart';
+import '../providers/settings_provider.dart';
 import '../services/game_service.dart';
 import '../widgets/extra_throws_counter.dart';
 import '../widgets/player_tabs.dart';
@@ -49,6 +51,7 @@ class _GameScreenState extends State<GameScreen> {
     required ScoreCategory category,
     int? currentValue,
   }) async {
+    final languageCode = context.read<SettingsProvider>().languageCode;
     final controller = TextEditingController(
       text: currentValue?.toString() ?? '',
     );
@@ -57,19 +60,19 @@ class _GameScreenState extends State<GameScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text(ScoreLabels.norwegian(category)),
+          title: Text(ScoreRules.title(languageCode, category)),
           content: TextField(
             controller: controller,
             keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              labelText: 'Poeng',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: AppTexts.t(languageCode, 'score'),
+              border: const OutlineInputBorder(),
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Avbryt'),
+              child: Text(AppTexts.t(languageCode, 'cancel')),
             ),
             ElevatedButton(
               onPressed: () {
@@ -77,7 +80,7 @@ class _GameScreenState extends State<GameScreen> {
                 if (value == null || value < 0) return;
                 Navigator.pop(context, value);
               },
-              child: const Text('Lagre'),
+              child: Text(AppTexts.t(languageCode, 'save')),
             ),
           ],
         );
@@ -93,15 +96,47 @@ class _GameScreenState extends State<GameScreen> {
     }
   }
 
+  Future<void> _showRuleDialog(
+    BuildContext context,
+    ScoreCategory category,
+  ) async {
+    final languageCode = context.read<SettingsProvider>().languageCode;
+
+    await showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(ScoreRules.title(languageCode, category)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(ScoreRules.description(languageCode, category)),
+              const SizedBox(height: 12),
+              Text(ScoreRules.example(languageCode, category)),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(AppTexts.t(languageCode, 'cancel')),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<GameProvider>();
     final game = provider.currentGame;
+    final languageCode = context.watch<SettingsProvider>().languageCode;
 
     if (game == null) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Spill'),
+          title: Text(AppTexts.t(languageCode, 'game')),
         ),
         body: const Center(
           child: Text('Fant ikke aktivt spill'),
@@ -113,7 +148,7 @@ class _GameScreenState extends State<GameScreen> {
     if (player == null) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Spill'),
+          title: Text(AppTexts.t(languageCode, 'game')),
         ),
         body: const Center(
           child: Text('Fant ikke spiller'),
@@ -122,16 +157,43 @@ class _GameScreenState extends State<GameScreen> {
     }
 
     final definitions = _gameService.getDefinitions(game.type);
-    final upperDefinitions =
-        definitions.where((d) => d.isUpperSection).toList();
-    final lowerDefinitions =
-        definitions.where((d) => !d.isUpperSection).toList();
+
+    final upperDefinitions = definitions.where((d) => d.isUpperSection).toList();
+
+    final lowerDefinitions = definitions.where((d) => !d.isUpperSection).toList()
+      ..sort((a, b) {
+        if (game.type != GameType.maxiYatzy) return 0;
+
+        final order = <ScoreCategory, int>{
+          ScoreCategory.onePair: 0,
+          ScoreCategory.twoPairs: 1,
+          ScoreCategory.threePairs: 2,
+          ScoreCategory.threeOfAKind: 3,
+          ScoreCategory.fourOfAKind: 4,
+          ScoreCategory.fiveOfAKind: 5,
+          ScoreCategory.smallStraight: 6,
+          ScoreCategory.largeStraight: 7,
+          ScoreCategory.fullStraight: 8,
+          ScoreCategory.fullHouse: 9, // Hytte
+          ScoreCategory.castle: 10, // Hus
+          ScoreCategory.tower: 11, // Tårn
+          ScoreCategory.chance: 12,
+          ScoreCategory.maxiYatzy: 13,
+          ScoreCategory.yatzy: 13,
+        };
+
+        return (order[a.category] ?? 999).compareTo(order[b.category] ?? 999);
+      });
 
     final playerScores = game.scores[player.id] ?? {};
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(game.type == GameType.yatzy ? 'Yatzy' : 'Maxi Yatzy'),
+        title: Text(
+          game.type == GameType.yatzy
+              ? AppTexts.t(languageCode, 'startYatzy')
+              : AppTexts.t(languageCode, 'startMaxiYatzy'),
+        ),
       ),
       body: SafeArea(
         child: Padding(
@@ -141,22 +203,41 @@ class _GameScreenState extends State<GameScreen> {
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(14),
-                  child: Row(
+                  child: Column(
                     children: [
-                      Expanded(
-                        child: Text(
-                          'Aktiv spiller: ${player.name}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              '${AppTexts.t(languageCode, 'activePlayer')}: ${player.name}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
-                        ),
+                          Text(
+                            '${AppTexts.t(languageCode, 'total')}: ${provider.getGrandTotal(player.id)}',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        'Total: ${provider.getGrandTotal(player.id)}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                        ),
+                      const SizedBox(height: 10),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: game.players.map((p) {
+                          final isActive = p.id == player.id;
+                          final total = provider.getGrandTotal(p.id);
+
+                          return Chip(
+                            label: Text('${p.name}: $total'),
+                            backgroundColor:
+                                isActive ? Colors.teal.withOpacity(0.15) : null,
+                          );
+                        }).toList(),
                       ),
                     ],
                   ),
@@ -190,14 +271,15 @@ class _GameScreenState extends State<GameScreen> {
               Expanded(
                 child: ListView(
                   children: [
-                    const _SectionHeader(title: 'Øvre del'),
+                    _SectionHeader(title: AppTexts.t(languageCode, 'upperSection')),
                     const SizedBox(height: 8),
                     ...upperDefinitions.map(
                       (definition) => Padding(
                         padding: const EdgeInsets.only(bottom: 8),
                         child: ScoreRow(
-                          title: ScoreLabels.norwegian(definition.category),
+                          title: ScoreRules.title(languageCode, definition.category),
                           value: playerScores[definition.category],
+                          onInfoTap: () => _showRuleDialog(context, definition.category),
                           onTap: () => _showScoreDialog(
                             context,
                             playerId: player.id,
@@ -208,14 +290,15 @@ class _GameScreenState extends State<GameScreen> {
                       ),
                     ),
                     const SizedBox(height: 14),
-                    const _SectionHeader(title: 'Nedre del'),
+                    _SectionHeader(title: AppTexts.t(languageCode, 'lowerSection')),
                     const SizedBox(height: 8),
                     ...lowerDefinitions.map(
                       (definition) => Padding(
                         padding: const EdgeInsets.only(bottom: 8),
                         child: ScoreRow(
-                          title: ScoreLabels.norwegian(definition.category),
+                          title: ScoreRules.title(languageCode, definition.category),
                           value: playerScores[definition.category],
+                          onInfoTap: () => _showRuleDialog(context, definition.category),
                           onTap: () => _showScoreDialog(
                             context,
                             playerId: player.id,
@@ -231,6 +314,10 @@ class _GameScreenState extends State<GameScreen> {
                       bonus: provider.getBonus(player.id),
                       lowerTotal: provider.getLowerSectionTotal(player.id),
                       grandTotal: provider.getGrandTotal(player.id),
+                      upperLabel: AppTexts.t(languageCode, 'upperTotal'),
+                      bonusLabel: AppTexts.t(languageCode, 'bonus'),
+                      lowerLabel: AppTexts.t(languageCode, 'lowerTotal'),
+                      totalLabel: AppTexts.t(languageCode, 'total'),
                     ),
                   ],
                 ),

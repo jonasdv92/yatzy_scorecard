@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../config/app_texts.dart';
 import '../providers/settings_provider.dart';
+import 'rules_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -9,18 +11,19 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsProvider>();
+    final languageCode = settings.languageCode;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Innstillinger'),
+        title: Text(AppTexts.t(languageCode, 'settings')),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
-            const Text(
-              'Språk',
-              style: TextStyle(
+            Text(
+              AppTexts.t(languageCode, 'language'),
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -30,7 +33,7 @@ class SettingsScreen extends StatelessWidget {
               child: Column(
                 children: [
                   RadioListTile<String>(
-                    title: const Text('Norsk'),
+                    title: Text(AppTexts.t(languageCode, 'norwegian')),
                     value: 'no',
                     groupValue: settings.languageCode,
                     onChanged: (value) {
@@ -40,7 +43,7 @@ class SettingsScreen extends StatelessWidget {
                     },
                   ),
                   RadioListTile<String>(
-                    title: const Text('English'),
+                    title: Text(AppTexts.t(languageCode, 'english')),
                     value: 'en',
                     groupValue: settings.languageCode,
                     onChanged: (value) {
@@ -53,25 +56,41 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Om appen',
-              style: TextStyle(
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const RulesScreen(),
+                    ),
+                  );
+                },
+                child: Text(AppTexts.t(languageCode, 'showRules')),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              AppTexts.t(languageCode, 'aboutApp'),
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
-            const Card(
+            Card(
               child: Padding(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Yatzy Scorecard – Maxi Yatzy'),
-                    SizedBox(height: 8),
-                    Text('Versjon 1.0 (utvikling)'),
-                    SizedBox(height: 8),
-                    Text('En enkel digital poengblokk for Yatzy og Maxi Yatzy.'),
+                    Text(AppTexts.t(languageCode, 'appTitle')),
+                    const SizedBox(height: 8),
+                    Text(AppTexts.t(languageCode, 'versionText')),
+                    const SizedBox(height: 8),
+                    Text(AppTexts.t(languageCode, 'aboutDescription')),
                   ],
                 ),
               ),

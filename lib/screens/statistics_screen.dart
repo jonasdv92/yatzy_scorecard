@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../config/app_texts.dart';
+import '../providers/settings_provider.dart';
 import '../providers/statistics_provider.dart';
 
 class StatisticsScreen extends StatefulWidget {
@@ -24,18 +26,19 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   Widget build(BuildContext context) {
     final provider = context.watch<StatisticsProvider>();
     final statistics = provider.statistics;
+    final languageCode = context.watch<SettingsProvider>().languageCode;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Statistikk'),
+        title: Text(AppTexts.t(languageCode, 'statistics')),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: provider.isLoading
             ? const Center(child: CircularProgressIndicator())
             : statistics == null || statistics.totalGames == 0
-                ? const Center(
-                    child: Text('Ingen ferdige spill ennå'),
+                ? Center(
+                    child: Text(AppTexts.t(languageCode, 'statisticsEmpty')),
                   )
                 : ListView(
                     children: [
@@ -45,15 +48,15 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                           child: Column(
                             children: [
                               _StatRow(
-                                label: 'Antall spill',
+                                label: AppTexts.t(languageCode, 'gamesPlayed'),
                                 value: statistics.totalGames.toString(),
                               ),
                               _StatRow(
-                                label: 'Beste score',
+                                label: AppTexts.t(languageCode, 'bestScore'),
                                 value: statistics.bestScoreOverall.toString(),
                               ),
                               _StatRow(
-                                label: 'Gjennomsnitt',
+                                label: AppTexts.t(languageCode, 'average'),
                                 value: statistics.averageScoreOverall
                                     .toStringAsFixed(1),
                               ),
@@ -62,9 +65,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      const Text(
-                        'Per spiller',
-                        style: TextStyle(
+                      Text(
+                        AppTexts.t(languageCode, 'perPlayer'),
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -86,21 +89,20 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                 ),
                                 const SizedBox(height: 8),
                                 _StatRow(
-                                  label: 'Spill',
+                                  label: AppTexts.t(languageCode, 'gamesPlayed'),
                                   value: player.gamesPlayed.toString(),
                                 ),
                                 _StatRow(
-                                  label: 'Seiere',
+                                  label: AppTexts.t(languageCode, 'wins'),
                                   value: player.wins.toString(),
                                 ),
                                 _StatRow(
-                                  label: 'Beste score',
+                                  label: AppTexts.t(languageCode, 'bestScore'),
                                   value: player.bestScore.toString(),
                                 ),
                                 _StatRow(
-                                  label: 'Gjennomsnitt',
-                                  value:
-                                      player.averageScore.toStringAsFixed(1),
+                                  label: AppTexts.t(languageCode, 'average'),
+                                  value: player.averageScore.toStringAsFixed(1),
                                 ),
                               ],
                             ),

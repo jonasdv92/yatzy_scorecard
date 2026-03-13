@@ -5,6 +5,10 @@ class TotalsCard extends StatelessWidget {
   final int bonus;
   final int lowerTotal;
   final int grandTotal;
+  final String upperLabel;
+  final String bonusLabel;
+  final String lowerLabel;
+  final String totalLabel;
 
   const TotalsCard({
     super.key,
@@ -12,6 +16,10 @@ class TotalsCard extends StatelessWidget {
     required this.bonus,
     required this.lowerTotal,
     required this.grandTotal,
+    required this.upperLabel,
+    required this.bonusLabel,
+    required this.lowerLabel,
+    required this.totalLabel,
   });
 
   Widget _buildRow(String label, int value, {bool bold = false}) {
@@ -45,11 +53,11 @@ class TotalsCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            _buildRow('Sum øvre del', upperTotal),
-            _buildRow('Bonus', bonus),
-            _buildRow('Sum nedre del', lowerTotal),
+            _buildRow(upperLabel, upperTotal),
+            _buildRow(bonusLabel, bonus),
+            _buildRow(lowerLabel, lowerTotal),
             const Divider(),
-            _buildRow('Total', grandTotal, bold: true),
+            _buildRow(totalLabel, grandTotal, bold: true),
           ],
         ),
       ),

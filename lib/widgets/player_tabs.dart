@@ -17,7 +17,7 @@ class PlayerTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 44,
+      height: 46,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: players.length,
@@ -26,7 +26,12 @@ class PlayerTabs extends StatelessWidget {
           final isSelected = index == selectedIndex;
 
           return ChoiceChip(
-            label: Text(players[index].name),
+            label: Text(
+              players[index].name,
+              style: TextStyle(
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
             selected: isSelected,
             onSelected: (_) => onSelected(index),
           );

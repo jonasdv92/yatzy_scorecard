@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../config/app_texts.dart';
 import '../models/game_type.dart';
+import '../providers/settings_provider.dart';
 import '../widgets/primary_button.dart';
 import 'continue_game_screen.dart';
 import 'new_game_screen.dart';
@@ -48,51 +51,53 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final languageCode = context.watch<SettingsProvider>().languageCode;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Yatzy Scorecard'),
+        title: Text(AppTexts.t(languageCode, 'appTitle')),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             const SizedBox(height: 24),
-            const Text(
+            Text(
               'Yatzy Scorecard – Maxi Yatzy',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
-            const Text(
-              'En enkel digital poengblokk',
+            Text(
+              AppTexts.t(languageCode, 'appSubtitle'),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
             PrimaryButton(
-              text: 'Start Yatzy',
+              text: AppTexts.t(languageCode, 'startYatzy'),
               onPressed: () => _openNewGame(context, GameType.yatzy),
             ),
             const SizedBox(height: 12),
             PrimaryButton(
-              text: 'Start Maxi Yatzy',
+              text: AppTexts.t(languageCode, 'startMaxiYatzy'),
               onPressed: () => _openNewGame(context, GameType.maxiYatzy),
             ),
             const SizedBox(height: 12),
             PrimaryButton(
-              text: 'Fortsett spill',
+              text: AppTexts.t(languageCode, 'continueGame'),
               onPressed: () => _openContinueGames(context),
             ),
             const SizedBox(height: 12),
             PrimaryButton(
-              text: 'Statistikk',
+              text: AppTexts.t(languageCode, 'statistics'),
               onPressed: () => _openStatistics(context),
             ),
             const SizedBox(height: 12),
             PrimaryButton(
-              text: 'Innstillinger',
+              text: AppTexts.t(languageCode, 'settings'),
               onPressed: () => _openSettings(context),
             ),
           ],

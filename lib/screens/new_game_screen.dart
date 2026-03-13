@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../config/app_constants.dart';
+import '../config/app_texts.dart';
 import '../models/game_type.dart';
 import '../providers/game_provider.dart';
+import '../providers/settings_provider.dart';
 import '../widgets/primary_button.dart';
 import 'game_screen.dart';
 
@@ -25,8 +27,8 @@ class _NewGameScreenState extends State<NewGameScreen> {
   @override
   void initState() {
     super.initState();
-    _controllers.add(TextEditingController(text: 'Spiller 1'));
-    _controllers.add(TextEditingController(text: 'Spiller 2'));
+    _controllers.add(TextEditingController(text: 'Player 1'));
+    _controllers.add(TextEditingController(text: 'Player 2'));
   }
 
   @override
@@ -37,13 +39,15 @@ class _NewGameScreenState extends State<NewGameScreen> {
     super.dispose();
   }
 
-  void _addPlayer() {
+  void _addPlayer(String languageCode) {
     if (_controllers.length >= AppConstants.maxPlayers) return;
+
+    final base = languageCode == 'en' ? 'Player' : 'Spiller';
 
     setState(() {
       _controllers.add(
         TextEditingController(
-          text: 'Spiller ${_controllers.length + 1}',
+          text: '$base ${_controllers.length + 1}',
         ),
       );
     });
@@ -71,27 +75,30 @@ class _NewGameScreenState extends State<NewGameScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (_) => GameScreen(),
+        builder: (_) => const GameScreen(),
       ),
     );
   }
 
-  String get _gameTitle {
+  String _gameTitle(String languageCode) {
     switch (widget.gameType) {
       case GameType.yatzy:
-        return 'Nytt Yatzy-spill';
+        return AppTexts.t(languageCode, 'newYatzyGame');
       case GameType.maxiYatzy:
-        return 'Nytt Maxi Yatzy-spill';
+        return AppTexts.t(languageCode, 'newMaxiGame');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final isLoading = context.watch<GameProvider>().isLoading;
+    final languageCode = context.watch<SettingsProvider>().languageCode;
+    final playerLabelBase =
+        languageCode == 'en' ? 'Player' : 'Spiller';
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_gameTitle),
+        title: Text(_gameTitle(languageCode)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -109,7 +116,7 @@ class _NewGameScreenState extends State<NewGameScreen> {
                           child: TextField(
                             controller: _controllers[index],
                             decoration: InputDecoration(
-                              labelText: 'Spiller ${index + 1}',
+                              labelText: '$playerLabelBase ${index + 1}',
                               border: const OutlineInputBorder(),
                             ),
                           ),
@@ -129,12 +136,14 @@ class _NewGameScreenState extends State<NewGameScreen> {
             ),
             const SizedBox(height: 12),
             PrimaryButton(
-              text: 'Legg til spiller',
-              onPressed: _addPlayer,
+              text: AppTexts.t(languageCode, 'addPlayer'),
+              onPressed: () => _addPlayer(languageCode),
             ),
             const SizedBox(height: 12),
             PrimaryButton(
-              text: isLoading ? 'Oppretter...' : 'Start spill',
+              text: isLoading
+                  ? AppTexts.t(languageCode, 'creating')
+                  : AppTexts.t(languageCode, 'startGame'),
               onPressed: isLoading ? () {} : _startGame,
             ),
           ],
