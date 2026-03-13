@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../config/score_labels.dart';
 import '../models/game_type.dart';
 import '../models/score_category.dart';
 import '../providers/game_provider.dart';
@@ -56,11 +57,12 @@ class _GameScreenState extends State<GameScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Skriv poeng'),
+          title: Text(ScoreLabels.norwegian(category)),
           content: TextField(
             controller: controller,
             keyboardType: TextInputType.number,
             decoration: const InputDecoration(
+              labelText: 'Poeng',
               border: OutlineInputBorder(),
             ),
           ),
@@ -88,53 +90,6 @@ class _GameScreenState extends State<GameScreen> {
             category: category,
             value: result,
           );
-    }
-  }
-
-  String _labelForCategory(ScoreCategory category) {
-    switch (category) {
-      case ScoreCategory.ones:
-        return '1ere';
-      case ScoreCategory.twos:
-        return '2ere';
-      case ScoreCategory.threes:
-        return '3ere';
-      case ScoreCategory.fours:
-        return '4ere';
-      case ScoreCategory.fives:
-        return '5ere';
-      case ScoreCategory.sixes:
-        return '6ere';
-      case ScoreCategory.onePair:
-        return '1 par';
-      case ScoreCategory.twoPairs:
-        return '2 par';
-      case ScoreCategory.threePairs:
-        return '3 par';
-      case ScoreCategory.threeOfAKind:
-        return '3 like';
-      case ScoreCategory.fourOfAKind:
-        return '4 like';
-      case ScoreCategory.fiveOfAKind:
-        return '5 like';
-      case ScoreCategory.smallStraight:
-        return 'Liten straight';
-      case ScoreCategory.largeStraight:
-        return 'Stor straight';
-      case ScoreCategory.fullStraight:
-        return 'Full straight';
-      case ScoreCategory.fullHouse:
-        return 'Hus';
-      case ScoreCategory.tower:
-        return 'Tower';
-      case ScoreCategory.castle:
-        return 'Castle';
-      case ScoreCategory.chance:
-        return 'Sjanse';
-      case ScoreCategory.yatzy:
-        return 'Yatzy';
-      case ScoreCategory.maxiYatzy:
-        return 'Maxi Yatzy';
     }
   }
 
@@ -176,100 +131,132 @@ class _GameScreenState extends State<GameScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          game.type == GameType.yatzy ? 'Yatzy' : 'Maxi Yatzy',
+        title: Text(game.type == GameType.yatzy ? 'Yatzy' : 'Maxi Yatzy'),
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            children: [
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Aktiv spiller: ${player.name}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        'Total: ${provider.getGrandTotal(player.id)}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              PlayerTabs(
+                players: game.players,
+                selectedIndex: provider.selectedPlayerIndex,
+                onSelected: provider.selectPlayer,
+              ),
+              const SizedBox(height: 10),
+              if (game.type == GameType.maxiYatzy) ...[
+                ExtraThrowsCounter(
+                  value: player.extraThrows,
+                  onIncrement: () {
+                    provider.updateExtraThrows(
+                      playerId: player.id,
+                      newValue: player.extraThrows + 1,
+                    );
+                  },
+                  onDecrement: () {
+                    provider.updateExtraThrows(
+                      playerId: player.id,
+                      newValue: player.extraThrows - 1,
+                    );
+                  },
+                ),
+                const SizedBox(height: 10),
+              ],
+              Expanded(
+                child: ListView(
+                  children: [
+                    const _SectionHeader(title: 'Øvre del'),
+                    const SizedBox(height: 8),
+                    ...upperDefinitions.map(
+                      (definition) => Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: ScoreRow(
+                          title: ScoreLabels.norwegian(definition.category),
+                          value: playerScores[definition.category],
+                          onTap: () => _showScoreDialog(
+                            context,
+                            playerId: player.id,
+                            category: definition.category,
+                            currentValue: playerScores[definition.category],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    const _SectionHeader(title: 'Nedre del'),
+                    const SizedBox(height: 8),
+                    ...lowerDefinitions.map(
+                      (definition) => Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: ScoreRow(
+                          title: ScoreLabels.norwegian(definition.category),
+                          value: playerScores[definition.category],
+                          onTap: () => _showScoreDialog(
+                            context,
+                            playerId: player.id,
+                            category: definition.category,
+                            currentValue: playerScores[definition.category],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    TotalsCard(
+                      upperTotal: provider.getUpperSectionTotal(player.id),
+                      bonus: provider.getBonus(player.id),
+                      lowerTotal: provider.getLowerSectionTotal(player.id),
+                      grandTotal: provider.getGrandTotal(player.id),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            PlayerTabs(
-              players: game.players,
-              selectedIndex: provider.selectedPlayerIndex,
-              onSelected: provider.selectPlayer,
-            ),
-            const SizedBox(height: 12),
-            if (game.type == GameType.maxiYatzy) ...[
-              ExtraThrowsCounter(
-                value: player.extraThrows,
-                onIncrement: () {
-                  provider.updateExtraThrows(
-                    playerId: player.id,
-                    newValue: player.extraThrows + 1,
-                  );
-                },
-                onDecrement: () {
-                  provider.updateExtraThrows(
-                    playerId: player.id,
-                    newValue: player.extraThrows - 1,
-                  );
-                },
-              ),
-              const SizedBox(height: 12),
-            ],
-            Expanded(
-              child: ListView(
-                children: [
-                  const Text(
-                    'Øvre del',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  ...upperDefinitions.map(
-                    (definition) => Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: ScoreRow(
-                        title: _labelForCategory(definition.category),
-                        value: playerScores[definition.category],
-                        onTap: () => _showScoreDialog(
-                          context,
-                          playerId: player.id,
-                          category: definition.category,
-                          currentValue: playerScores[definition.category],
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Nedre del',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  ...lowerDefinitions.map(
-                    (definition) => Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: ScoreRow(
-                        title: _labelForCategory(definition.category),
-                        value: playerScores[definition.category],
-                        onTap: () => _showScoreDialog(
-                          context,
-                          playerId: player.id,
-                          category: definition.category,
-                          currentValue: playerScores[definition.category],
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TotalsCard(
-                    upperTotal: provider.getUpperSectionTotal(player.id),
-                    bonus: provider.getBonus(player.id),
-                    lowerTotal: provider.getLowerSectionTotal(player.id),
-                    grandTotal: provider.getGrandTotal(player.id),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+    );
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  final String title;
+
+  const _SectionHeader({
+    required this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title,
+      style: const TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
       ),
     );
   }

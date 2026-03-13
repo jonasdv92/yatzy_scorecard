@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import '../screens/continue_game_screen.dart';
+
 import '../models/game_type.dart';
 import '../widgets/primary_button.dart';
+import 'continue_game_screen.dart';
 import 'new_game_screen.dart';
+import 'settings_screen.dart';
+import 'statistics_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -12,6 +15,33 @@ class HomeScreen extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (_) => NewGameScreen(gameType: type),
+      ),
+    );
+  }
+
+  void _openContinueGames(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const ContinueGameScreen(),
+      ),
+    );
+  }
+
+  void _openStatistics(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const StatisticsScreen(),
+      ),
+    );
+  }
+
+  void _openSettings(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const SettingsScreen(),
       ),
     );
   }
@@ -53,35 +83,17 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 12),
             PrimaryButton(
               text: 'Fortsett spill',
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Kommer i neste pakke'),
-                  ),
-                );
-              },
+              onPressed: () => _openContinueGames(context),
             ),
             const SizedBox(height: 12),
             PrimaryButton(
               text: 'Statistikk',
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Kommer senere'),
-                  ),
-                );
-              },
+              onPressed: () => _openStatistics(context),
             ),
             const SizedBox(height: 12),
             PrimaryButton(
               text: 'Innstillinger',
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Kommer senere'),
-                  ),
-                );
-              },
+              onPressed: () => _openSettings(context),
             ),
           ],
         ),

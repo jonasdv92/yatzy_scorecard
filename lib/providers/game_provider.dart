@@ -37,10 +37,14 @@ class GameProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    _savedGames = _gameRepository.getAllGames();
-
-    _isLoading = false;
-    notifyListeners();
+    try {
+      _savedGames = _gameRepository.getAllGames();
+    } catch (e) {
+      debugPrint('loadGames error: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<void> createGame({
@@ -50,59 +54,68 @@ class GameProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final cleanedNames = playerNames
-        .map((name) => name.trim())
-        .where((name) => name.isNotEmpty)
-        .toList();
+    try {
+      final cleanedNames = playerNames
+          .map((name) => name.trim())
+          .where((name) => name.isNotEmpty)
+          .toList();
 
-    final players = <Player>[];
+      final players = <Player>[];
 
-    for (int i = 0; i < cleanedNames.length; i++) {
-      players.add(
-        Player(
-          id: 'player_${DateTime.now().millisecondsSinceEpoch}_$i',
-          name: cleanedNames[i],
-        ),
+      for (int i = 0; i < cleanedNames.length; i++) {
+        players.add(
+          Player(
+            id: 'player_${DateTime.now().millisecondsSinceEpoch}_$i',
+            name: cleanedNames[i],
+          ),
+        );
+      }
+
+      final scores = <String, Map<ScoreCategory, int?>>{};
+      for (final player in players) {
+        scores[player.id] = _gameService.createEmptyScoreMap(type);
+      }
+
+      final now = DateTime.now();
+
+      _currentGame = Game(
+        id: now.millisecondsSinceEpoch.toString(),
+        type: type,
+        players: players,
+        scores: scores,
+        createdAt: now,
+        updatedAt: now,
+        isFinished: false,
       );
+
+      _selectedPlayerIndex = 0;
+      _justFinishedGame = false;
+
+      await _gameRepository.saveGame(_currentGame!);
+      _savedGames = _gameRepository.getAllGames();
+    } catch (e) {
+      debugPrint('createGame error: $e');
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
-
-    final scores = <String, Map<ScoreCategory, int?>>{};
-    for (final player in players) {
-      scores[player.id] = _gameService.createEmptyScoreMap(type);
-    }
-
-    final now = DateTime.now();
-
-    _currentGame = Game(
-      id: now.millisecondsSinceEpoch.toString(),
-      type: type,
-      players: players,
-      scores: scores,
-      createdAt: now,
-      updatedAt: now,
-      isFinished: false,
-    );
-
-    _selectedPlayerIndex = 0;
-    _justFinishedGame = false;
-
-    await _gameRepository.saveGame(_currentGame!);
-    _savedGames = _gameRepository.getAllGames();
-
-    _isLoading = false;
-    notifyListeners();
   }
 
   Future<void> openGame(String gameId) async {
     _isLoading = true;
     notifyListeners();
 
-    _currentGame = _gameRepository.getGame(gameId);
-    _selectedPlayerIndex = 0;
-    _justFinishedGame = false;
-
-    _isLoading = false;
-    notifyListeners();
+    try {
+      _currentGame = _gameRepository.getGame(gameId);
+      _selectedPlayerIndex = 0;
+      _justFinishedGame = false;
+    } catch (e) {
+      debugPrint('openGame error: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   void selectPlayer(int index) {
@@ -120,22 +133,26 @@ class GameProvider extends ChangeNotifier {
   }) async {
     if (_currentGame == null) return;
 
-    final wasFinishedBefore = _currentGame!.isFinished;
+    try {
+      final wasFinishedBefore = _currentGame!.isFinished;
 
-    _currentGame = _gameService.updateScore(
-      game: _currentGame!,
-      playerId: playerId,
-      category: category,
-      value: value,
-    );
+      _currentGame = _gameService.updateScore(
+        game: _currentGame!,
+        playerId: playerId,
+        category: category,
+        value: value,
+      );
 
-    _justFinishedGame =
-        !wasFinishedBefore && (_currentGame?.isFinished ?? false);
+      _justFinishedGame =
+          !wasFinishedBefore && (_currentGame?.isFinished ?? false);
 
-    await _gameRepository.saveGame(_currentGame!);
-    _savedGames = _gameRepository.getAllGames();
+      await _gameRepository.saveGame(_currentGame!);
+      _savedGames = _gameRepository.getAllGames();
 
-    notifyListeners();
+      notifyListeners();
+    } catch (e) {
+      debugPrint('updateScore error: $e');
+    }
   }
 
   Future<void> updateExtraThrows({
@@ -144,16 +161,20 @@ class GameProvider extends ChangeNotifier {
   }) async {
     if (_currentGame == null) return;
 
-    _currentGame = _gameService.updateExtraThrows(
-      game: _currentGame!,
-      playerId: playerId,
-      newValue: newValue,
-    );
+    try {
+      _currentGame = _gameService.updateExtraThrows(
+        game: _currentGame!,
+        playerId: playerId,
+        newValue: newValue,
+      );
 
-    await _gameRepository.saveGame(_currentGame!);
-    _savedGames = _gameRepository.getAllGames();
+      await _gameRepository.saveGame(_currentGame!);
+      _savedGames = _gameRepository.getAllGames();
 
-    notifyListeners();
+      notifyListeners();
+    } catch (e) {
+      debugPrint('updateExtraThrows error: $e');
+    }
   }
 
   int getUpperSectionTotal(String playerId) {
@@ -177,29 +198,37 @@ class GameProvider extends ChangeNotifier {
   }
 
   Future<void> deleteGame(String gameId) async {
-    await _gameRepository.deleteGame(gameId);
+    try {
+      await _gameRepository.deleteGame(gameId);
 
-    if (_currentGame?.id == gameId) {
-      _currentGame = null;
-      _selectedPlayerIndex = 0;
-      _justFinishedGame = false;
+      if (_currentGame?.id == gameId) {
+        _currentGame = null;
+        _selectedPlayerIndex = 0;
+        _justFinishedGame = false;
+      }
+
+      _savedGames = _gameRepository.getAllGames();
+      notifyListeners();
+    } catch (e) {
+      debugPrint('deleteGame error: $e');
     }
-
-    _savedGames = _gameRepository.getAllGames();
-    notifyListeners();
   }
 
   Future<void> createRematch() async {
     if (_currentGame == null) return;
 
-    _currentGame = _gameService.createRematch(_currentGame!);
-    _selectedPlayerIndex = 0;
-    _justFinishedGame = false;
+    try {
+      _currentGame = _gameService.createRematch(_currentGame!);
+      _selectedPlayerIndex = 0;
+      _justFinishedGame = false;
 
-    await _gameRepository.saveGame(_currentGame!);
-    _savedGames = _gameRepository.getAllGames();
+      await _gameRepository.saveGame(_currentGame!);
+      _savedGames = _gameRepository.getAllGames();
 
-    notifyListeners();
+      notifyListeners();
+    } catch (e) {
+      debugPrint('createRematch error: $e');
+    }
   }
 
   void clearCurrentGame() {

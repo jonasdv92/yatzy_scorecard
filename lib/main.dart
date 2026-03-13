@@ -8,6 +8,7 @@ import 'models/game_type.dart';
 import 'models/score_category.dart';
 import 'providers/game_provider.dart';
 import 'providers/settings_provider.dart';
+import 'providers/statistics_provider.dart';
 import 'screens/home_screen.dart';
 import 'services/storage_service.dart';
 
@@ -35,9 +36,16 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => GameProvider()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
+        ChangeNotifierProvider(create: (_) => StatisticsProvider()),
       ],
       child: MaterialApp(
         title: 'Yatzy Scorecard',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.teal,
+          ),
+          useMaterial3: true,
+        ),
         home: const HomeScreen(),
       ),
     );
