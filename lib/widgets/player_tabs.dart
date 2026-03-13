@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/player.dart';
+import '../config/app_theme.dart';
 
 class PlayerTabs extends StatelessWidget {
   final List<Player> players;
@@ -29,10 +30,18 @@ class PlayerTabs extends StatelessWidget {
             label: Text(
               players[index].name,
               style: TextStyle(
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                fontWeight: FontWeight.w700,
+                color: isSelected ? Colors.white : AppTheme.textPrimary,
               ),
             ),
             selected: isSelected,
+            selectedColor: AppTheme.primary,
+            backgroundColor: Colors.white,
+            side: BorderSide(
+              color: isSelected
+                  ? AppTheme.primary
+                  : Colors.black.withValues(alpha: 0.08),
+            ),
             onSelected: (_) => onSelected(index),
           );
         },

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../config/app_theme.dart';
+
 class TotalsCard extends StatelessWidget {
   final int upperTotal;
   final int bonus;
@@ -31,14 +33,14 @@ class TotalsCard extends StatelessWidget {
             child: Text(
               label,
               style: TextStyle(
-                fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+                fontWeight: bold ? FontWeight.w700 : FontWeight.normal,
               ),
             ),
           ),
           Text(
             value.toString(),
             style: TextStyle(
-              fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+              fontWeight: bold ? FontWeight.w700 : FontWeight.normal,
             ),
           ),
         ],
@@ -56,8 +58,17 @@ class TotalsCard extends StatelessWidget {
             _buildRow(upperLabel, upperTotal),
             _buildRow(bonusLabel, bonus),
             _buildRow(lowerLabel, lowerTotal),
-            const Divider(),
-            _buildRow(totalLabel, grandTotal, bold: true),
+            Divider(
+              color: Colors.black.withValues(alpha: 0.08),
+            ),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppTheme.surfaceSoft,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: _buildRow(totalLabel, grandTotal, bold: true),
+            ),
           ],
         ),
       ),

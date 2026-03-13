@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
+import 'config/app_theme.dart';
 import 'models/game.dart';
 import 'models/player.dart';
 import 'models/game_type.dart';
@@ -9,6 +10,7 @@ import 'models/score_category.dart';
 import 'providers/game_provider.dart';
 import 'providers/settings_provider.dart';
 import 'providers/statistics_provider.dart';
+import 'providers/purchase_provider.dart';
 import 'screens/home_screen.dart';
 import 'services/storage_service.dart';
 
@@ -37,16 +39,12 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => GameProvider()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
         ChangeNotifierProvider(create: (_) => StatisticsProvider()),
+        ChangeNotifierProvider(create: (_) => PurchaseProvider()),
       ],
       child: MaterialApp(
         title: 'Yatzy Scorecard',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.teal,
-          ),
-          useMaterial3: true,
-        ),
+        theme: AppTheme.light(),
         home: const HomeScreen(),
       ),
     );

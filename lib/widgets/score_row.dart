@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../config/app_theme.dart';
+
 class ScoreRow extends StatelessWidget {
   final String title;
   final int? value;
@@ -19,10 +21,10 @@ class ScoreRow extends StatelessWidget {
     final isFilled = value != null;
 
     return Material(
-      color: isFilled ? Colors.teal.withValues(alpha: 0.08) : Colors.grey.shade50,
-      borderRadius: BorderRadius.circular(12),
+      color: isFilled ? AppTheme.surfaceSoft : Colors.white,
+      borderRadius: BorderRadius.circular(14),
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -42,11 +44,23 @@ class ScoreRow extends StatelessWidget {
                   style: const TextStyle(fontSize: 16),
                 ),
               ),
-              Text(
-                value?.toString() ?? '-',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 17,
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: isFilled
+                      ? AppTheme.primary.withValues(alpha: 0.08)
+                      : Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  value?.toString() ?? '-',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 17,
+                  ),
                 ),
               ),
             ],
