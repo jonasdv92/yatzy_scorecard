@@ -57,50 +57,58 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(AppTexts.t(languageCode, 'appTitle')),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            const SizedBox(height: 24),
-            Text(
-              'Yatzy Scorecard – Maxi Yatzy',
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              const SizedBox(height: 24),
+              Text(
+                'Yatzy Scorecard – Maxi Yatzy',
+                style: const TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              AppTexts.t(languageCode, 'appSubtitle'),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-            PrimaryButton(
-              text: AppTexts.t(languageCode, 'startYatzy'),
-              onPressed: () => _openNewGame(context, GameType.yatzy),
-            ),
-            const SizedBox(height: 12),
-            PrimaryButton(
-              text: AppTexts.t(languageCode, 'startMaxiYatzy'),
-              onPressed: () => _openNewGame(context, GameType.maxiYatzy),
-            ),
-            const SizedBox(height: 12),
-            PrimaryButton(
-              text: AppTexts.t(languageCode, 'continueGame'),
-              onPressed: () => _openContinueGames(context),
-            ),
-            const SizedBox(height: 12),
-            PrimaryButton(
-              text: AppTexts.t(languageCode, 'statistics'),
-              onPressed: () => _openStatistics(context),
-            ),
-            const SizedBox(height: 12),
-            PrimaryButton(
-              text: AppTexts.t(languageCode, 'settings'),
-              onPressed: () => _openSettings(context),
-            ),
-          ],
+              const SizedBox(height: 12),
+              Text(
+                AppTexts.t(languageCode, 'appSubtitle'),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 28),
+              Expanded(
+                child: Column(
+                  children: [
+                    PrimaryButton(
+                      text: AppTexts.t(languageCode, 'startYatzy'),
+                      onPressed: () => _openNewGame(context, GameType.yatzy),
+                    ),
+                    const SizedBox(height: 12),
+                    PrimaryButton(
+                      text: AppTexts.t(languageCode, 'startMaxiYatzy'),
+                      onPressed: () => _openNewGame(context, GameType.maxiYatzy),
+                    ),
+                    const SizedBox(height: 12),
+                    PrimaryButton(
+                      text: AppTexts.t(languageCode, 'continueGame'),
+                      onPressed: () => _openContinueGames(context),
+                    ),
+                    const SizedBox(height: 12),
+                    PrimaryButton(
+                      text: AppTexts.t(languageCode, 'statistics'),
+                      onPressed: () => _openStatistics(context),
+                    ),
+                    const SizedBox(height: 12),
+                    PrimaryButton(
+                      text: AppTexts.t(languageCode, 'settings'),
+                      onPressed: () => _openSettings(context),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

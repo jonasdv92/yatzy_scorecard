@@ -4,8 +4,6 @@ import 'package:provider/provider.dart';
 import '../config/app_texts.dart';
 import '../providers/settings_provider.dart';
 import '../providers/statistics_provider.dart';
-import '../providers/purchase_provider.dart';
-import 'pro_screen.dart';
 
 class StatisticsScreen extends StatefulWidget {
   const StatisticsScreen({super.key});
@@ -29,55 +27,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     final provider = context.watch<StatisticsProvider>();
     final statistics = provider.statistics;
     final languageCode = context.watch<SettingsProvider>().languageCode;
-    final isPro = context.watch<PurchaseProvider>().isPro;
-
-    if (!isPro) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(AppTexts.t(languageCode, 'statistics')),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(18),
-                  child: Column(
-                    children: [
-                      const Icon(
-                        Icons.lock_outline,
-                        size: 38,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        AppTexts.t(languageCode, 'statisticsEmpty'),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const ProScreen(),
-                              ),
-                            );
-                          },
-                          child: Text(AppTexts.t(languageCode, 'getPro')),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
 
     return Scaffold(
       appBar: AppBar(

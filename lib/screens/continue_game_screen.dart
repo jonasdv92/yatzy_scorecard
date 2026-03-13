@@ -103,36 +103,38 @@ class _ContinueGameScreenState extends State<ContinueGameScreen> {
       appBar: AppBar(
         title: Text(AppTexts.t(languageCode, 'savedGames')),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : games.isEmpty
-                ? Center(
-                    child: Text(AppTexts.t(languageCode, 'noSavedGames')),
-                  )
-                : ListView.builder(
-                    itemCount: games.length,
-                    itemBuilder: (context, index) {
-                      final game = games[index];
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : games.isEmpty
+                  ? Center(
+                      child: Text(AppTexts.t(languageCode, 'noSavedGames')),
+                    )
+                  : ListView.builder(
+                      itemCount: games.length,
+                      itemBuilder: (context, index) {
+                        final game = games[index];
 
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        child: ListTile(
-                          title: Text(_gameTypeLabel(game.type)),
-                          subtitle: Text(
-                            '${_playersLabel(game, languageCode)} • ${_statusLabel(game, languageCode)}',
+                        return Card(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          child: ListTile(
+                            title: Text(_gameTypeLabel(game.type)),
+                            subtitle: Text(
+                              '${_playersLabel(game, languageCode)} • ${_statusLabel(game, languageCode)}',
+                            ),
+                            trailing: IconButton(
+                              onPressed: () =>
+                                  _deleteGame(context, game.id, languageCode),
+                              icon: const Icon(Icons.delete_outline),
+                            ),
+                            onTap: () => _openGame(context, game.id),
                           ),
-                          trailing: IconButton(
-                            onPressed: () =>
-                                _deleteGame(context, game.id, languageCode),
-                            icon: const Icon(Icons.delete_outline),
-                          ),
-                          onTap: () => _openGame(context, game.id),
-                        ),
-                      );
-                    },
-                  ),
+                        );
+                      },
+                    ),
+        ),
       ),
     );
   }
